@@ -7,10 +7,15 @@ export async function GET(request: Request) {
   const next = searchParams.get("next") ?? "/admin";
 
   if (code) {
-    const supabase = await createSupabaseServerClient();
-    const { error } = await supabase.auth.exchangeCodeForSession(code);
-    if (!error) {
-      return NextResponse.redirect(`${origin}${next}`);
+    try {
+      const supabase = await createSupabaseServerClient();
+      const { error } = await supabase.auth.exchangeCodeForSession(code);
+      if (!error) {
+        return NextResponse.redirect(`${origin}${next}`);
+      }
+      console.error("Exchange code error:", error);
+    } catch (err) {
+      console.error("Callback error:", err);
     }
   }
 
