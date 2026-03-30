@@ -6,14 +6,17 @@ let _provider: DataProvider | null = null;
 export function getDataProvider(): DataProvider {
   if (_provider) return _provider;
 
+  let provider: DataProvider;
+
   if (process.env.USE_MOCK === "true") {
-    _provider = mockProvider;
+    provider = mockProvider;
   } else {
     // Lazy import to avoid loading Supabase deps in mock mode
     // eslint-disable-next-line @typescript-eslint/no-require-imports
     const { supabaseProvider } = require("./supabase-provider");
-    _provider = supabaseProvider;
+    provider = supabaseProvider;
   }
 
+  _provider = provider;
   return _provider;
 }
