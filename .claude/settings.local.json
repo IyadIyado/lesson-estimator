@@ -1,0 +1,33 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npx create-next-app@latest . --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-pnpm --no-turbopack)",
+      "Bash(npx create-next-app@latest temp-init --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-pnpm --no-turbopack)",
+      "Bash(rm -rf temp-init)",
+      "Bash(echo {})",
+      "Bash(npx create-next-app@latest temp-init --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-pnpm --no-turbopack --no-react-compiler)",
+      "Bash(npm install:*)",
+      "Bash(pnpm --version)",
+      "Bash(npx create-next-app@latest temp-init --typescript --tailwind --eslint --app --src-dir --import-alias \"@/*\" --use-pnpm --no-turbopack --no-react-compiler --no-agents)",
+      "Bash(pnpm init:*)",
+      "Bash(pnpm add:*)",
+      "Bash(timeout 15 pnpm dev)",
+      "Bash(pnpm dlx:*)",
+      "Bash(npx shadcn@latest init -d)",
+      "Bash(npx shadcn@latest add button card input dialog table badge -y)",
+      "Bash(pnpm vitest:*)",
+      "Bash(pnpm remove:*)",
+      "Bash(pnpm approve-builds:*)",
+      "Bash(pnpm config:*)",
+      "Bash(pnpm install:*)",
+      "Bash(timeout 20 pnpm dev)",
+      "Bash(taskkill /PID 15944 /F)",
+      "Bash(taskkill //PID 15944 //F)",
+      "Bash(pnpm dev:*)",
+      "Bash(tasklist //FI \"IMAGENAME eq node.exe\" //FO CSV)",
+      "mcp__Claude_Preview__preview_start",
+      "Bash(netstat -aon)",
+      "Bash(xargs -I{} taskkill //PID {} //F)"
+    ]
+  }
+}
