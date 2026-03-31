@@ -100,7 +100,7 @@ export default async function PublicQueuePage() {
         </div>
           <p className="pt-2 text-base font-semibold italic text-muted-foreground">
             &quot;btw the above is written with AI, but it pretty much covers the gist of
-            how I like to teach my students&quot; — Iyad A.
+            my teaching philosophy&quot; — Iyad A.
           </p>
 
       </div>
