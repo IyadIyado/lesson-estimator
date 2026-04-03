@@ -95,4 +95,42 @@ export const supabaseProvider: DataProvider = {
         .eq("id", orderedIds[i]);
     }
   },
+
+  async getArchivedStudents() {
+    const { data } = await db()
+      .from("archived_students")
+      .select("*")
+      .order("created_at", { ascending: true });
+    return data ?? [];
+  },
+
+  async archiveActiveStudent(id) {
+    const { data: student } = await db()
+      .from("active_students")
+      .select("*")
+      .eq("id", id)
+      .single();
+    if (!student) return;
+    await db().from("active_students").delete().eq("id", id);
+    await db()
+      .from("archived_students")
+      .insert({ name: student.name, remaining_lessons: student.remaining_lessons });
+  },
+
+  async restoreArchivedStudent(id) {
+    const { data: student } = await db()
+      .from("archived_students")
+      .select("*")
+      .eq("id", id)
+      .single();
+    if (!student) return;
+    await db().from("archived_students").delete().eq("id", id);
+    await db()
+      .from("active_students")
+      .insert({ name: student.name, remaining_lessons: student.remaining_lessons });
+  },
+
+  async removeArchivedStudent(id) {
+    await db().from("archived_students").delete().eq("id", id);
+  },
 };

@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 import type { ActiveStudent } from "@/lib/data/types";
 import {
   addActiveStudent,
+  archiveActiveStudent,
   removeActiveStudent,
   updateActiveStudent,
 } from "@/app/admin/actions";
@@ -81,6 +82,12 @@ function StudentRow({ student }: { student: ActiveStudent }) {
     setSaving(false);
   };
 
+  const handleArchive = async () => {
+    const formData = new FormData();
+    formData.set("id", student.id);
+    await archiveActiveStudent(formData);
+  };
+
   const handleRemove = async () => {
     const formData = new FormData();
     formData.set("id", student.id);
@@ -105,6 +112,14 @@ function StudentRow({ student }: { student: ActiveStudent }) {
           disabled={saving}
         />
       </div>
+      <Button
+        variant="outline"
+        size="sm"
+        onClick={handleArchive}
+        className="rounded-full border-2 border-warm-border text-pastel-blue hover:bg-pastel-blue/20"
+      >
+        Archive
+      </Button>
       <Button
         variant="outline"
         size="sm"

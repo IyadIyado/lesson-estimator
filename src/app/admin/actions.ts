@@ -77,3 +77,24 @@ export async function updateSettings(formData: FormData) {
   await getDataProvider().updateSettings(parsed);
   revalidatePath("/");
 }
+
+export async function archiveActiveStudent(formData: FormData) {
+  await requireOwner();
+  const { id } = removeStudentSchema.parse({ id: formData.get("id") });
+  await getDataProvider().archiveActiveStudent(id);
+  revalidatePath("/");
+}
+
+export async function restoreArchivedStudent(formData: FormData) {
+  await requireOwner();
+  const { id } = removeStudentSchema.parse({ id: formData.get("id") });
+  await getDataProvider().restoreArchivedStudent(id);
+  revalidatePath("/");
+}
+
+export async function removeArchivedStudent(formData: FormData) {
+  await requireOwner();
+  const { id } = removeStudentSchema.parse({ id: formData.get("id") });
+  await getDataProvider().removeArchivedStudent(id);
+  revalidatePath("/");
+}

@@ -1,6 +1,7 @@
 import { getDataProvider } from "@/lib/data/provider";
 import { calculateETAs } from "@/lib/estimator";
 import { ActiveStudentsTable } from "@/components/active-students-table";
+import { ArchivedStudentsList } from "@/components/archived-students-list";
 import { QueueList } from "@/components/queue-list";
 import { SettingsCard } from "@/components/settings-card";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
@@ -10,9 +11,10 @@ export const dynamic = "force-dynamic";
 
 export default async function AdminDashboard() {
   const provider = getDataProvider();
-  const [activeStudents, queuedStudents, settings] = await Promise.all([
+  const [activeStudents, queuedStudents, archivedStudents, settings] = await Promise.all([
     provider.getActiveStudents(),
     provider.getQueuedStudents(),
+    provider.getArchivedStudents(),
     provider.getSettings(),
   ]);
 
@@ -33,6 +35,8 @@ export default async function AdminDashboard() {
       />
 
       <QueueList students={queuedStudents} />
+
+      <ArchivedStudentsList students={archivedStudents} />
 
       {/* ETA Preview */}
       {queuedStudents.length > 0 && activeStudents.length > 0 && (

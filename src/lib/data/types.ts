@@ -12,6 +12,13 @@ export interface QueuedStudent {
   created_at: string;
 }
 
+export interface ArchivedStudent {
+  id: string;
+  name: string;
+  remaining_lessons: number;
+  created_at: string;
+}
+
 export interface Settings {
   default_lessons: number;
 }
@@ -32,4 +39,9 @@ export interface DataProvider {
   addQueuedStudent(name: string): Promise<void>;
   removeQueuedStudent(id: string): Promise<void>;
   reorderQueue(orderedIds: string[]): Promise<void>;
+
+  getArchivedStudents(): Promise<ArchivedStudent[]>;
+  archiveActiveStudent(id: string): Promise<void>;
+  restoreArchivedStudent(id: string): Promise<void>;
+  removeArchivedStudent(id: string): Promise<void>;
 }

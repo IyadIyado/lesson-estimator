@@ -1,4 +1,4 @@
-import type { DataProvider, ActiveStudent, QueuedStudent, Settings } from "./types";
+import type { DataProvider, ActiveStudent, ArchivedStudent, QueuedStudent, Settings } from "./types";
 
 let settings: Settings = { default_lessons: 5 };
 
@@ -17,6 +17,8 @@ let queuedStudents: QueuedStudent[] = [
   { id: "q4", name: "Lucas", position: 3, created_at: "2026-02-04" },
   { id: "q5", name: "Mia", position: 4, created_at: "2026-02-05" },
 ];
+
+let archivedStudents: ArchivedStudent[] = [];
 
 let nextId = 100;
 function genId() {
@@ -89,5 +91,27 @@ export const mockProvider: DataProvider = {
         return null;
       })
       .filter((s): s is QueuedStudent => s !== null);
+  },
+
+  async getArchivedStudents() {
+    return archivedStudents.map((s) => ({ ...s }));
+  },
+
+  async archiveActiveStudent(id) {
+    const student = activeStudents.find((s) => s.id === id);
+    if (!student) return;
+    activeStudents = activeStudents.filter((s) => s.id !== id);
+    archivedStudents.push({ ...student });
+  },
+
+  async restoreArchivedStudent(id) {
+    const student = archivedStudents.find((s) => s.id === id);
+    if (!student) return;
+    archivedStudents = archivedStudents.filter((s) => s.id !== id);
+    activeStudents.push({ ...student });
+  },
+
+  async removeArchivedStudent(id) {
+    archivedStudents = archivedStudents.filter((s) => s.id !== id);
   },
 };
