@@ -116,7 +116,7 @@ function StudentRow({ student }: { student: ActiveStudent }) {
         variant="outline"
         size="sm"
         onClick={handleArchive}
-        className="rounded-full border-2 border-warm-border text-pastel-blue hover:bg-pastel-blue/20"
+        className="rounded-full border-2 border-warm-border text-teal-600 hover:bg-pastel-blue/20"
       >
         Archive
       </Button>
