@@ -36,6 +36,10 @@ export default async function PublicQueuePage() {
 
         {/* Left column: Queue */}
         <div className="md:w-80 md:shrink-0">
+          <p className="mb-3 text-center text-sm font-semibold text-foreground">
+            Currently teaching {activeStudents.length}{" "}
+            {activeStudents.length === 1 ? "student" : "students"}
+          </p>
           {activeStudents.length === 0 ? (
             <Card className="border-2 border-warm-border bg-card">
               <CardContent className="py-8 text-center text-muted-foreground">
