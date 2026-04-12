@@ -1,6 +1,6 @@
 "use client";
 
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   DragDropContext,
   Droppable,
@@ -19,21 +19,46 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export function QueueList({ students }: { students: QueuedStudent[] }) {
   const addFormRef = useRef<HTMLFormElement>(null);
+  const [localOrder, setLocalOrder] = useState<QueuedStudent[] | null>(null);
+  const [saving, setSaving] = useState(false);
 
-  const handleDragEnd = async (result: DropResult) => {
+  const displayed = localOrder ?? students;
+  const hasChanges =
+    localOrder !== null &&
+    localOrder.some((s, i) => s.id !== students[i]?.id);
+
+  const handleDragEnd = (result: DropResult) => {
     if (!result.destination) return;
-    const items = Array.from(students);
+    const items = Array.from(displayed);
     const [moved] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, moved);
-    await reorderQueue(items.map((s) => s.id));
+    setLocalOrder(items);
+  };
+
+  const handleSave = async () => {
+    if (!localOrder) return;
+    setSaving(true);
+    await reorderQueue(localOrder.map((s) => s.id));
+    setLocalOrder(null);
+    setSaving(false);
   };
 
   return (
     <Card className="border-2 border-warm-border bg-card">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg text-foreground">
-          Queue ({students.length})
+          Queue ({displayed.length})
         </CardTitle>
+        {hasChanges && (
+          <Button
+            size="sm"
+            onClick={handleSave}
+            disabled={saving}
+            className="rounded-full bg-pastel-green text-foreground hover:bg-pastel-green/80"
+          >
+            {saving ? "Saving..." : "Save"}
+          </Button>
+        )}
       </CardHeader>
       <CardContent className="space-y-3">
         <DragDropContext onDragEnd={handleDragEnd}>
@@ -44,7 +69,7 @@ export function QueueList({ students }: { students: QueuedStudent[] }) {
                 {...provided.droppableProps}
                 className="space-y-2"
               >
-                {students.map((student, index) => (
+                {displayed.map((student, index) => (
                   <Draggable
                     key={student.id}
                     draggableId={student.id}
@@ -75,6 +100,7 @@ export function QueueList({ students }: { students: QueuedStudent[] }) {
                             const formData = new FormData();
                             formData.set("id", student.id);
                             await removeQueuedStudent(formData);
+                            setLocalOrder(null);
                           }}
                           className="rounded-full border-2 border-warm-border text-peach-600 hover:bg-peach-100"
                         >
@@ -95,6 +121,7 @@ export function QueueList({ students }: { students: QueuedStudent[] }) {
           ref={addFormRef}
           action={async (formData) => {
             await addQueuedStudent(formData);
+            setLocalOrder(null);
             addFormRef.current?.reset();
           }}
           className="flex items-center gap-2 rounded-2xl border-2 border-dashed border-warm-border bg-peach-50 px-4 py-3"

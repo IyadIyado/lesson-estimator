@@ -20,17 +20,135 @@ export function ActiveStudentsTable({
   defaultLessons: number;
 }) {
   const addFormRef = useRef<HTMLFormElement>(null);
+  const [edits, setEdits] = useState<Record<string, string>>({});
+  const [saving, setSaving] = useState(false);
+
+  const hasChanges = Object.entries(edits).some(([id, val]) => {
+    const student = students.find((s) => s.id === id);
+    if (!student) return false;
+    const num = parseInt(val, 10);
+    return !isNaN(num) && num !== student.remaining_lessons;
+  });
+
+  const setLessons = (id: string, value: string) => {
+    setEdits((prev) => ({ ...prev, [id]: value }));
+  };
+
+  const getLessons = (student: ActiveStudent): string => {
+    if (student.id in edits) return edits[student.id];
+    return String(student.remaining_lessons);
+  };
+
+  const increment = (student: ActiveStudent) => {
+    const current = parseInt(getLessons(student), 10);
+    const val = isNaN(current) ? student.remaining_lessons : current;
+    setLessons(student.id, String(val + 1));
+  };
+
+  const decrement = (student: ActiveStudent) => {
+    const current = parseInt(getLessons(student), 10);
+    const val = isNaN(current) ? student.remaining_lessons : current;
+    if (val > 0) setLessons(student.id, String(val - 1));
+  };
+
+  const handleSave = async () => {
+    setSaving(true);
+    const updates = Object.entries(edits)
+      .map(([id, val]) => {
+        const student = students.find((s) => s.id === id);
+        const num = parseInt(val, 10);
+        if (!student || isNaN(num) || num === student.remaining_lessons) return null;
+        return { id, remaining_lessons: num };
+      })
+      .filter((u): u is { id: string; remaining_lessons: number } => u !== null);
+
+    for (const update of updates) {
+      const formData = new FormData();
+      formData.set("id", update.id);
+      formData.set("remaining_lessons", String(update.remaining_lessons));
+      await updateActiveStudent(formData);
+    }
+    setEdits({});
+    setSaving(false);
+  };
 
   return (
     <Card className="border-2 border-warm-border bg-card">
-      <CardHeader>
+      <CardHeader className="flex flex-row items-center justify-between">
         <CardTitle className="text-lg text-foreground">
           Active Students ({students.length})
         </CardTitle>
+        {hasChanges && (
+          <Button
+            size="sm"
+            onClick={handleSave}
+            disabled={saving}
+            className="rounded-full bg-pastel-green text-foreground hover:bg-pastel-green/80"
+          >
+            {saving ? "Saving..." : "Save"}
+          </Button>
+        )}
       </CardHeader>
       <CardContent className="space-y-3">
         {students.map((student) => (
-          <StudentRow key={student.id} student={student} />
+          <div
+            key={student.id}
+            className="flex items-center gap-3 rounded-2xl border-2 border-warm-border bg-peach-50 px-4 py-3"
+          >
+            <span className="flex-1 font-semibold text-foreground">
+              {student.name}
+            </span>
+            <div className="flex items-center gap-1">
+              <label className="mr-1 text-xs text-muted-foreground">Lessons left:</label>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => decrement(student)}
+                className="h-8 w-8 rounded-full border-2 border-warm-border p-0 text-foreground hover:bg-peach-100"
+              >
+                −
+              </Button>
+              <Input
+                type="number"
+                min={0}
+                value={getLessons(student)}
+                onChange={(e) => setLessons(student.id, e.target.value)}
+                className="w-16 rounded-xl border-2 border-warm-border bg-white text-center text-sm"
+              />
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => increment(student)}
+                className="h-8 w-8 rounded-full border-2 border-warm-border p-0 text-foreground hover:bg-peach-100"
+              >
+                +
+              </Button>
+            </div>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                const formData = new FormData();
+                formData.set("id", student.id);
+                await archiveActiveStudent(formData);
+              }}
+              className="rounded-full border-2 border-warm-border text-teal-600 hover:bg-pastel-blue/20"
+            >
+              Archive
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                const formData = new FormData();
+                formData.set("id", student.id);
+                await removeActiveStudent(formData);
+              }}
+              className="rounded-full border-2 border-warm-border text-peach-600 hover:bg-peach-100"
+            >
+              Remove
+            </Button>
+          </div>
         ))}
 
         {/* Add new student */}
@@ -65,69 +183,5 @@ export function ActiveStudentsTable({
         </form>
       </CardContent>
     </Card>
-  );
-}
-
-function StudentRow({ student }: { student: ActiveStudent }) {
-  const [lessons, setLessons] = useState(student.remaining_lessons);
-  const [saving, setSaving] = useState(false);
-
-  const handleUpdate = async () => {
-    if (lessons === student.remaining_lessons) return;
-    setSaving(true);
-    const formData = new FormData();
-    formData.set("id", student.id);
-    formData.set("remaining_lessons", String(lessons));
-    await updateActiveStudent(formData);
-    setSaving(false);
-  };
-
-  const handleArchive = async () => {
-    const formData = new FormData();
-    formData.set("id", student.id);
-    await archiveActiveStudent(formData);
-  };
-
-  const handleRemove = async () => {
-    const formData = new FormData();
-    formData.set("id", student.id);
-    await removeActiveStudent(formData);
-  };
-
-  return (
-    <div className="flex items-center gap-3 rounded-2xl border-2 border-warm-border bg-peach-50 px-4 py-3">
-      <span className="flex-1 font-semibold text-foreground">
-        {student.name}
-      </span>
-      <div className="flex items-center gap-2">
-        <label className="text-xs text-muted-foreground">Lessons left:</label>
-        <Input
-          type="number"
-          min={0}
-          value={lessons}
-          onChange={(e) => setLessons(Number(e.target.value))}
-          onBlur={handleUpdate}
-          onKeyDown={(e) => e.key === "Enter" && handleUpdate()}
-          className="w-16 rounded-xl border-2 border-warm-border bg-white text-center text-sm"
-          disabled={saving}
-        />
-      </div>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleArchive}
-        className="rounded-full border-2 border-warm-border text-teal-600 hover:bg-pastel-blue/20"
-      >
-        Archive
-      </Button>
-      <Button
-        variant="outline"
-        size="sm"
-        onClick={handleRemove}
-        className="rounded-full border-2 border-warm-border text-peach-600 hover:bg-peach-100"
-      >
-        Remove
-      </Button>
-    </div>
   );
 }
