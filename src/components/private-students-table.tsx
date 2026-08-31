@@ -11,7 +11,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-type Edits = Record<string, { rate?: string; hours?: string }>;
+type Edits = Record<string, { rate?: string; hours?: string; misc?: string }>;
 
 export function PrivateStudentsTable({
   students,
@@ -25,18 +25,16 @@ export function PrivateStudentsTable({
   const hasChanges = Object.entries(edits).some(([id, edit]) => {
     const student = students.find((s) => s.id === id);
     if (!student) return false;
-    if (edit.rate !== undefined) {
-      const num = parseInt(edit.rate, 10);
-      if (!isNaN(num) && num !== student.rate) return true;
-    }
-    if (edit.hours !== undefined) {
-      const num = parseInt(edit.hours, 10);
-      if (!isNaN(num) && num !== student.hours) return true;
+    for (const field of ["rate", "hours", "misc"] as const) {
+      if (edit[field] !== undefined) {
+        const num = parseInt(edit[field], 10);
+        if (!isNaN(num) && num !== student[field]) return true;
+      }
     }
     return false;
   });
 
-  const setField = (id: string, field: "rate" | "hours", value: string) => {
+  const setField = (id: string, field: "rate" | "hours" | "misc", value: string) => {
     setEdits((prev) => ({
       ...prev,
       [id]: { ...prev[id], [field]: value },
@@ -51,10 +49,15 @@ export function PrivateStudentsTable({
     return edits[student.id]?.hours ?? String(student.hours);
   };
 
+  const getMisc = (student: PrivateStudent): string => {
+    return edits[student.id]?.misc ?? String(student.misc);
+  };
+
   const getTotal = (student: PrivateStudent): number => {
     const rate = parseInt(getRate(student), 10) || 0;
     const hours = parseInt(getHours(student), 10) || 0;
-    return rate * hours;
+    const misc = parseInt(getMisc(student), 10) || 0;
+    return rate * hours + misc;
   };
 
   const grandTotal = students.reduce((sum, s) => sum + getTotal(s), 0);
@@ -67,18 +70,13 @@ export function PrivateStudentsTable({
       const formData = new FormData();
       formData.set("id", id);
       let changed = false;
-      if (edit.rate !== undefined) {
-        const num = parseInt(edit.rate, 10);
-        if (!isNaN(num) && num !== student.rate) {
-          formData.set("rate", String(num));
-          changed = true;
-        }
-      }
-      if (edit.hours !== undefined) {
-        const num = parseInt(edit.hours, 10);
-        if (!isNaN(num) && num !== student.hours) {
-          formData.set("hours", String(num));
-          changed = true;
+      for (const field of ["rate", "hours", "misc"] as const) {
+        if (edit[field] !== undefined) {
+          const num = parseInt(edit[field], 10);
+          if (!isNaN(num) && num !== student[field]) {
+            formData.set(field, String(num));
+            changed = true;
+          }
         }
       }
       if (changed) await updatePrivateStudent(formData);
@@ -111,6 +109,7 @@ export function PrivateStudentsTable({
             <span className="flex-1">Name</span>
             <span className="w-20 text-center">Rate ($)</span>
             <span className="w-20 text-center">Hours</span>
+            <span className="w-20 text-center">Misc. ($)</span>
             <span className="w-20 text-center">Total</span>
             <span className="w-[70px]" />
           </div>
@@ -136,6 +135,13 @@ export function PrivateStudentsTable({
               min={0}
               value={getHours(student)}
               onChange={(e) => setField(student.id, "hours", e.target.value)}
+              className="w-20 rounded-xl border-2 border-warm-border bg-white text-center text-sm"
+            />
+            <Input
+              type="number"
+              min={0}
+              value={getMisc(student)}
+              onChange={(e) => setField(student.id, "misc", e.target.value)}
               className="w-20 rounded-xl border-2 border-warm-border bg-white text-center text-sm"
             />
             <span className="w-20 text-center text-sm font-semibold text-foreground">
@@ -181,6 +187,14 @@ export function PrivateStudentsTable({
           />
           <Input
             name="hours"
+            type="number"
+            min={0}
+            defaultValue={0}
+            required
+            className="w-20 rounded-xl border-2 border-warm-border bg-white text-center"
+          />
+          <Input
+            name="misc"
             type="number"
             min={0}
             defaultValue={0}

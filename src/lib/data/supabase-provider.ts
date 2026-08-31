@@ -142,10 +142,10 @@ export const supabaseProvider: DataProvider = {
     return data ?? [];
   },
 
-  async addPrivateStudent(name, rate, hours) {
+  async addPrivateStudent(name, rate, hours, misc) {
     await db()
       .from("private_students")
-      .insert({ name, rate, hours });
+      .insert({ name, rate, hours, misc });
   },
 
   async updatePrivateStudent(id, data) {

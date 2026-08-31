@@ -24,6 +24,7 @@ export interface PrivateStudent {
   name: string;
   rate: number;
   hours: number;
+  misc: number;
   created_at: string;
 }
 
@@ -54,10 +55,10 @@ export interface DataProvider {
   removeArchivedStudent(id: string): Promise<void>;
 
   getPrivateStudents(): Promise<PrivateStudent[]>;
-  addPrivateStudent(name: string, rate: number, hours: number): Promise<void>;
+  addPrivateStudent(name: string, rate: number, hours: number, misc: number): Promise<void>;
   updatePrivateStudent(
     id: string,
-    data: Partial<Pick<PrivateStudent, "name" | "rate" | "hours">>
+    data: Partial<Pick<PrivateStudent, "name" | "rate" | "hours" | "misc">>
   ): Promise<void>;
   removePrivateStudent(id: string): Promise<void>;
 }

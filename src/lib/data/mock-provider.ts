@@ -121,12 +121,13 @@ export const mockProvider: DataProvider = {
     return privateStudents.map((s) => ({ ...s }));
   },
 
-  async addPrivateStudent(name, rate, hours) {
+  async addPrivateStudent(name, rate, hours, misc) {
     privateStudents.push({
       id: genId(),
       name,
       rate,
       hours,
+      misc,
       created_at: new Date().toISOString(),
     });
   },

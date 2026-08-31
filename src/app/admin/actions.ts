@@ -107,8 +107,9 @@ export async function addPrivateStudent(formData: FormData) {
     name: formData.get("name"),
     rate: formData.get("rate"),
     hours: formData.get("hours"),
+    misc: formData.get("misc"),
   });
-  await getDataProvider().addPrivateStudent(parsed.name, parsed.rate, parsed.hours);
+  await getDataProvider().addPrivateStudent(parsed.name, parsed.rate, parsed.hours, parsed.misc);
   revalidatePath("/");
 }
 
@@ -119,6 +120,7 @@ export async function updatePrivateStudent(formData: FormData) {
     name: formData.get("name") || undefined,
     rate: formData.get("rate") ?? undefined,
     hours: formData.get("hours") ?? undefined,
+    misc: formData.get("misc") ?? undefined,
   });
   const { id, ...data } = parsed;
   await getDataProvider().updatePrivateStudent(id, data);
