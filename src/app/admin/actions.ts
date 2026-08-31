@@ -10,6 +10,8 @@ import {
   addQueuedStudentSchema,
   reorderQueueSchema,
   updateSettingsSchema,
+  addPrivateStudentSchema,
+  updatePrivateStudentSchema,
 } from "@/lib/data/schemas";
 
 async function requireOwner() {
@@ -96,5 +98,36 @@ export async function removeArchivedStudent(formData: FormData) {
   await requireOwner();
   const { id } = removeStudentSchema.parse({ id: formData.get("id") });
   await getDataProvider().removeArchivedStudent(id);
+  revalidatePath("/");
+}
+
+export async function addPrivateStudent(formData: FormData) {
+  await requireOwner();
+  const parsed = addPrivateStudentSchema.parse({
+    name: formData.get("name"),
+    rate: formData.get("rate"),
+    hours: formData.get("hours"),
+  });
+  await getDataProvider().addPrivateStudent(parsed.name, parsed.rate, parsed.hours);
+  revalidatePath("/");
+}
+
+export async function updatePrivateStudent(formData: FormData) {
+  await requireOwner();
+  const parsed = updatePrivateStudentSchema.parse({
+    id: formData.get("id"),
+    name: formData.get("name") || undefined,
+    rate: formData.get("rate") ?? undefined,
+    hours: formData.get("hours") ?? undefined,
+  });
+  const { id, ...data } = parsed;
+  await getDataProvider().updatePrivateStudent(id, data);
+  revalidatePath("/");
+}
+
+export async function removePrivateStudent(formData: FormData) {
+  await requireOwner();
+  const { id } = removeStudentSchema.parse({ id: formData.get("id") });
+  await getDataProvider().removePrivateStudent(id);
   revalidatePath("/");
 }

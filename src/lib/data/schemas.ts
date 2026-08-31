@@ -26,3 +26,16 @@ export const reorderQueueSchema = z.object({
 export const updateSettingsSchema = z.object({
   default_lessons: z.coerce.number().int().min(1),
 });
+
+export const addPrivateStudentSchema = z.object({
+  name: z.string().min(1, "Name is required").max(100),
+  rate: z.coerce.number().int().min(0),
+  hours: z.coerce.number().int().min(0),
+});
+
+export const updatePrivateStudentSchema = z.object({
+  id: z.string().min(1),
+  name: z.string().min(1).max(100).optional(),
+  rate: z.coerce.number().int().min(0).optional(),
+  hours: z.coerce.number().int().min(0).optional(),
+});

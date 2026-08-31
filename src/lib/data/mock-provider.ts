@@ -1,4 +1,4 @@
-import type { DataProvider, ActiveStudent, ArchivedStudent, QueuedStudent, Settings } from "./types";
+import type { DataProvider, ActiveStudent, ArchivedStudent, PrivateStudent, QueuedStudent, Settings } from "./types";
 
 let settings: Settings = { default_lessons: 5 };
 
@@ -19,6 +19,8 @@ let queuedStudents: QueuedStudent[] = [
 ];
 
 let archivedStudents: ArchivedStudent[] = [];
+
+let privateStudents: PrivateStudent[] = [];
 
 let nextId = 100;
 function genId() {
@@ -113,5 +115,29 @@ export const mockProvider: DataProvider = {
 
   async removeArchivedStudent(id) {
     archivedStudents = archivedStudents.filter((s) => s.id !== id);
+  },
+
+  async getPrivateStudents() {
+    return privateStudents.map((s) => ({ ...s }));
+  },
+
+  async addPrivateStudent(name, rate, hours) {
+    privateStudents.push({
+      id: genId(),
+      name,
+      rate,
+      hours,
+      created_at: new Date().toISOString(),
+    });
+  },
+
+  async updatePrivateStudent(id, data) {
+    privateStudents = privateStudents.map((s) =>
+      s.id === id ? { ...s, ...data } : s
+    );
+  },
+
+  async removePrivateStudent(id) {
+    privateStudents = privateStudents.filter((s) => s.id !== id);
   },
 };

@@ -19,6 +19,14 @@ export interface ArchivedStudent {
   created_at: string;
 }
 
+export interface PrivateStudent {
+  id: string;
+  name: string;
+  rate: number;
+  hours: number;
+  created_at: string;
+}
+
 export interface Settings {
   default_lessons: number;
 }
@@ -44,4 +52,12 @@ export interface DataProvider {
   archiveActiveStudent(id: string): Promise<void>;
   restoreArchivedStudent(id: string): Promise<void>;
   removeArchivedStudent(id: string): Promise<void>;
+
+  getPrivateStudents(): Promise<PrivateStudent[]>;
+  addPrivateStudent(name: string, rate: number, hours: number): Promise<void>;
+  updatePrivateStudent(
+    id: string,
+    data: Partial<Pick<PrivateStudent, "name" | "rate" | "hours">>
+  ): Promise<void>;
+  removePrivateStudent(id: string): Promise<void>;
 }

@@ -133,4 +133,26 @@ export const supabaseProvider: DataProvider = {
   async removeArchivedStudent(id) {
     await db().from("archived_students").delete().eq("id", id);
   },
+
+  async getPrivateStudents() {
+    const { data } = await db()
+      .from("private_students")
+      .select("*")
+      .order("created_at", { ascending: true });
+    return data ?? [];
+  },
+
+  async addPrivateStudent(name, rate, hours) {
+    await db()
+      .from("private_students")
+      .insert({ name, rate, hours });
+  },
+
+  async updatePrivateStudent(id, data) {
+    await db().from("private_students").update(data).eq("id", id);
+  },
+
+  async removePrivateStudent(id) {
+    await db().from("private_students").delete().eq("id", id);
+  },
 };
