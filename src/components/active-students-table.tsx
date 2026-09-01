@@ -93,61 +93,65 @@ export function ActiveStudentsTable({
         {students.map((student) => (
           <div
             key={student.id}
-            className="flex items-center gap-3 rounded-2xl border-2 border-warm-border bg-peach-50 px-4 py-3"
+            className="flex flex-col gap-2 rounded-2xl border-2 border-warm-border bg-peach-50 px-4 py-3"
           >
-            <span className="flex-1 font-semibold text-foreground">
-              {student.name}
-            </span>
-            <div className="flex items-center gap-1">
-              <label className="mr-1 text-xs text-muted-foreground">Lessons left:</label>
+            <div className="flex items-center gap-3">
+              <span className="flex-1 font-semibold text-foreground">
+                {student.name}
+              </span>
+              <div className="flex items-center gap-1">
+                <label className="mr-1 text-xs text-muted-foreground">Lessons left:</label>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => decrement(student)}
+                  className="h-8 w-8 rounded-full border-2 border-warm-border p-0 text-foreground hover:bg-peach-100"
+                >
+                  −
+                </Button>
+                <Input
+                  type="number"
+                  min={0}
+                  value={getLessons(student)}
+                  onChange={(e) => setLessons(student.id, e.target.value)}
+                  className="w-16 rounded-xl border-2 border-warm-border bg-white text-center text-sm"
+                />
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => increment(student)}
+                  className="h-8 w-8 rounded-full border-2 border-warm-border p-0 text-foreground hover:bg-peach-100"
+                >
+                  +
+                </Button>
+              </div>
+            </div>
+            <div className="flex justify-end gap-2">
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => decrement(student)}
-                className="h-8 w-8 rounded-full border-2 border-warm-border p-0 text-foreground hover:bg-peach-100"
+                onClick={async () => {
+                  const formData = new FormData();
+                  formData.set("id", student.id);
+                  await archiveActiveStudent(formData);
+                }}
+                className="rounded-full border-2 border-warm-border text-teal-600 hover:bg-pastel-blue/20"
               >
-                −
+                Archive
               </Button>
-              <Input
-                type="number"
-                min={0}
-                value={getLessons(student)}
-                onChange={(e) => setLessons(student.id, e.target.value)}
-                className="w-16 rounded-xl border-2 border-warm-border bg-white text-center text-sm"
-              />
               <Button
                 variant="outline"
                 size="sm"
-                onClick={() => increment(student)}
-                className="h-8 w-8 rounded-full border-2 border-warm-border p-0 text-foreground hover:bg-peach-100"
+                onClick={async () => {
+                  const formData = new FormData();
+                  formData.set("id", student.id);
+                  await removeActiveStudent(formData);
+                }}
+                className="rounded-full border-2 border-warm-border text-peach-600 hover:bg-peach-100"
               >
-                +
+                Remove
               </Button>
             </div>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={async () => {
-                const formData = new FormData();
-                formData.set("id", student.id);
-                await archiveActiveStudent(formData);
-              }}
-              className="rounded-full border-2 border-warm-border text-teal-600 hover:bg-pastel-blue/20"
-            >
-              Archive
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={async () => {
-                const formData = new FormData();
-                formData.set("id", student.id);
-                await removeActiveStudent(formData);
-              }}
-              className="rounded-full border-2 border-warm-border text-peach-600 hover:bg-peach-100"
-            >
-              Remove
-            </Button>
           </div>
         ))}
 
