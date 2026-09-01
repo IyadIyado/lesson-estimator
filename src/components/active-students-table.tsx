@@ -126,7 +126,7 @@ export function ActiveStudentsTable({
                 </Button>
               </div>
             </div>
-            <div className="flex justify-end gap-2">
+            <div className="flex gap-2">
               <Button
                 variant="outline"
                 size="sm"
@@ -135,7 +135,7 @@ export function ActiveStudentsTable({
                   formData.set("id", student.id);
                   await archiveActiveStudent(formData);
                 }}
-                className="rounded-full border-2 border-warm-border text-teal-600 hover:bg-pastel-blue/20"
+                className="flex-1 rounded-xl border-2 border-warm-border bg-pastel-green/40 text-foreground hover:bg-pastel-green/70"
               >
                 Archive
               </Button>
@@ -147,7 +147,7 @@ export function ActiveStudentsTable({
                   formData.set("id", student.id);
                   await removeActiveStudent(formData);
                 }}
-                className="rounded-full border-2 border-warm-border text-peach-600 hover:bg-peach-100"
+                className="flex-1 rounded-xl border-2 border-warm-border bg-peach-300/40 text-foreground hover:bg-peach-300/70"
               >
                 Remove
               </Button>
