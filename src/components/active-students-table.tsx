@@ -96,7 +96,7 @@ export function ActiveStudentsTable({
             className="flex flex-col gap-2 rounded-2xl border-2 border-warm-border bg-peach-50 px-4 py-3"
           >
             <div className="flex items-center gap-3">
-              <span className="flex-1 font-semibold text-foreground">
+              <span className="flex-1 text-lg font-bold text-foreground">
                 {student.name}
               </span>
               <div className="flex items-center gap-1">
